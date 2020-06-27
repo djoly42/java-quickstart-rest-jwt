@@ -2,10 +2,14 @@ package com.djoly.hello.RESTJWT;
 
 import com.djoly.hello.RESTJWT.model.User;
 import com.djoly.hello.RESTJWT.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.charset.Charset;
 import java.util.Random;
@@ -19,20 +23,21 @@ public class RestJwtApplication {
 		SpringApplication.run(RestJwtApplication.class, args);
 	}
 
+	@Autowired
+	PasswordEncoder encoder;
+
+
+
 	@Bean
 	CommandLineRunner init(UserRepository userRepository) {
+
+
 		return args -> {
-
-
 
 			Stream.of("usertest", "Julie", "Jennifer", "Helen", "Rachel").forEach(name -> {
 
-				byte[] array = new byte[7]; // length is bounded by 7
-				new Random().nextBytes(array);
-				String generatedString = new String(array, Charset.forName("UTF-8"));
-
 				User user = new User(name,
-						"$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6",
+						encoder.encode("password"),
 						null);
 				userRepository.save(user);
 			});
